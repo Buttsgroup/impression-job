@@ -4,8 +4,7 @@ Testing for Job object and method
 import unittest
 import warnings
 
-from job import Job
-from job import JobCreationError, JobNotFoundError, JobAccessError
+from job import Job, JobCreationError, JobNotFoundError, JobAccessError
 
 from google.cloud import firestore, storage
 

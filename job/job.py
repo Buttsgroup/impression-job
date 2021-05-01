@@ -8,6 +8,8 @@ import enum
 
 from google.cloud import firestore
 from google.cloud.firestore import DocumentReference
+
+from job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
 from job.firestore import ref_job
 
 
@@ -233,18 +235,3 @@ class JobStatus(enum.IntEnum):
     STARTED = 3
     FINISHED = 4
     ERROR = 5
-
-
-class JobCreationError(Exception):
-    """on failure to create a new job"""
-    pass
-
-
-class JobNotFoundError(Exception):
-    """Invalid job id"""
-    pass
-
-
-class JobAccessError(Exception):
-    """No access to job"""
-    pass
