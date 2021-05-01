@@ -4,10 +4,10 @@ Testing for Job object and method
 import unittest
 import warnings
 
-from job.job import Job
-from job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
+from impression_job.job import Job
+from impression_job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
 
-from google.cloud import firestore, storage
+from google.cloud import firestore
 
 
 class TestJob(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestJob(unittest.TestCase):
                           'err': '', 'output_file_url': None}
 
         # Upload to database
-        self.test_job.update_in_db('test-job')
+        self.test_job.update_in_db('test-impression_job')
 
     def test_db(self):
         self.assertTrue(isinstance(self.test_job.db, firestore.Client))
@@ -58,13 +58,13 @@ class TestJob(unittest.TestCase):
                              self.test_dict)
 
     def test_update(self):
-        job_id = self.test_job.update_in_db('test-job')
+        job_id = self.test_job.update_in_db('test-impression_job')
 
-        self.assertEqual(self.test_job.job_id, 'test-job')
-        self.assertEqual(job_id, 'test-job')
+        self.assertEqual(self.test_job.job_id, 'test-impression_job')
+        self.assertEqual(job_id, 'test-impression_job')
 
     def test_from_id(self):
-        new_job = Job.from_id('test-job', 'test-user')
+        new_job = Job.from_id('test-impression_job', 'test-user')
 
         self.assertDictEqual(new_job.to_dict(), self.test_dict)
 
@@ -74,11 +74,11 @@ class TestJob(unittest.TestCase):
 
     def test_non_matching_user(self):
         with self.assertRaises(JobAccessError):
-            Job.from_id('test-job', 'incorrect-user')
+            Job.from_id('test-impression_job', 'incorrect-user')
 
     def test_delete(self):
         job_to_delete = Job.from_dict(self.test_dict)
-        job_to_delete.update_in_db('job-to-delete')
+        job_to_delete.update_in_db('impression_job-to-delete')
 
         self.assertTrue(job_to_delete.delete_in_db())
 
@@ -86,4 +86,4 @@ class TestJob(unittest.TestCase):
         self.assertIs(self.test_job.output_file_url, None)
 
     def tearDown(self) -> None:
-        self.test_job.db.document('jobs/test-job').delete()
+        self.test_job.db.document('jobs/test-impression_job').delete()

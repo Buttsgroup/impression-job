@@ -10,7 +10,7 @@ def ref_jobs(database: firestore.Client):
 
 
 def ref_job(database: firestore.Client, job_id: str):
-    """create reference to job document in jobs collection in firestore"""
+    """create reference to impression_job document in jobs collection in firestore"""
     return ref_jobs(database).document(job_id)
 
 
@@ -23,7 +23,7 @@ def _get_user_job_snapshots(username) -> [firestore.DocumentSnapshot]:
 
 def get_user_job_ids(username) -> list:
     """
-    return a list of job ids associated with the username from the database
+    return a list of impression_job ids associated with the username from the database
     """
     jobs_ss = _get_user_job_snapshots(username)
     result = list(map(lambda x: x.to_dict()['job_id'], jobs_ss))
@@ -31,7 +31,7 @@ def get_user_job_ids(username) -> list:
 
 
 def get_user_jobs(username: str) -> [dict]:
-    """return list of job dictionaries associated with the username"""
+    """return list of impression_job dictionaries associated with the username"""
     jobs_ss = _get_user_job_snapshots(username)
     return [job_ss.to_dict() for job_ss in jobs_ss]
 

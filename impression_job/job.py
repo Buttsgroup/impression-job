@@ -1,5 +1,5 @@
 """
-IMPRESSION Job: manage job instances within firestore
+IMPRESSION Job: manage impression_job instances within firestore
 JobAccessError, JobCreationError, JobNotFoundError
 JobStatus enum
 """
@@ -9,8 +9,8 @@ import enum
 from google.cloud import firestore
 from google.cloud.firestore import DocumentReference
 
-from job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
-from job.firestore import ref_job
+from impression_job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
+from impression_job.firestore import ref_job
 
 
 class Job:
@@ -18,7 +18,7 @@ class Job:
     Job object for IMPRESSION
     Raises JobCreationError on invalid File dictionary
     Raises JobAccessError: init from db : permission denied
-    Raises JobNotFoundError: init from db: no such job id
+    Raises JobNotFoundError: init from db: no such impression_job id
     """
     _datetime_format = '%y-%m-%d::%H:%M'
 
@@ -28,7 +28,7 @@ class Job:
                  model: str = None,
                  job_id: str = None):
         """
-        Creating a new job via file upload
+        Creating a new impression_job via file upload
         """
         self.user = user
         self.file = file
@@ -186,10 +186,10 @@ class Job:
                 self.file is None and
                 self.model is None):
             raise JobCreationError(
-                f"""Cannot add empty job to database:
+                f"""Cannot add empty impression_job to database:
                 {self.user}, {self.file}, {self.model}""")
 
-        # Passing None to document() generates a job-id
+        # Passing None to document() generates a impression_job-id
         ref: DocumentReference = self.db.collection(u'jobs').document(jid)
 
         write_res: firestore.types.WriteResult = ref.set(self.to_dict())
