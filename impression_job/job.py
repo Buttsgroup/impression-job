@@ -3,24 +3,25 @@ IMPRESSION Job: manage impression_job instances within firestore
 JobAccessError, JobCreationError, JobNotFoundError
 JobStatus enum
 """
+import abc
 from datetime import datetime
 import enum
 
-from google.cloud import firestore
-from google.cloud.firestore import DocumentReference
-
-from impression_job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
-from impression_job.firestore import ref_job
+from impression_job.exceptions import JobCreationError
 
 
-class Job:
+class Job(abc.ABC):
     """
-    Job object for IMPRESSION
+    Base Job object for IMPRESSION
+    On creation, methods for database access will be passed via the
+    command pattern
+
     Raises JobCreationError on invalid File dictionary
     Raises JobAccessError: init from db : permission denied
     Raises JobNotFoundError: init from db: no such impression_job id
     """
     _datetime_format = '%y-%m-%d::%H:%M'
+    platform = None
 
     def __init__(self,
                  user: str = None,
@@ -122,10 +123,13 @@ class Job:
         self._err = value
 
     @property
+    @abc.abstractmethod
     def db(self):
-        if self._db is None:
-            self._db = firestore.Client()
-        return self._db
+        """
+        Access database client/socket if set,
+        otherwise fetch, set and return it
+        """
+    pass
 
     def to_dict(self):
         return {u'job_id': self.job_id,
@@ -144,71 +148,32 @@ class Job:
                 }
 
     @staticmethod
+    @abc.abstractmethod
     def from_dict(src: dict):
-        job = Job(user=None)
-        for k, v in src.items():
-            try:
-                if 'time' in k:
-                    setattr(job, k, Job._datetimefromstr(v))
-
-                elif k == 'status':
-                    setattr(job, k, JobStatus(v))
-                else:
-                    setattr(job, k, v)
-            except AttributeError:
-                pass
-
-        return job
+        pass
 
     @staticmethod
-    def from_id(job_id: str, user: str, db: firestore.Client = None):
+    @abc.abstractmethod
+    def from_id(job_id: str, user: str):
         """
         Look up a job_id in the database
         Return the constructed Job object IF user matches Job.user
         """
-        if db is None:
-            db = firestore.Client()
+        pass
 
-        job_ref = ref_job(db, job_id).get()
-        if job_ref.exists:
-            job = Job.from_dict(job_ref.to_dict())
-            if job.user == user:
-                return job
-            else:
-                raise JobAccessError(f"{user} does not own {job_id}")
-        else:
-            raise JobNotFoundError(f'{job_id} does not exist')
-
+    @abc.abstractmethod
     def update_in_db(self, job_id=None) -> str:
-        jid = self.job_id if job_id is None else job_id
+        """
+        Overwrite own entry in the database
+        """
+        pass
 
-        if (self.user is None and
-                self.file is None and
-                self.model is None):
-            raise JobCreationError(
-                f"""Cannot add empty impression_job to database:
-                {self.user}, {self.file}, {self.model}""")
-
-        # Passing None to document() generates a impression_job-id
-        ref: DocumentReference = self.db.collection(u'jobs').document(jid)
-
-        write_res: firestore.types.WriteResult = ref.set(self.to_dict())
-
-        if write_res:
-            self.job_id = ref.id
-
-        return self.job_id
-
+    @abc.abstractmethod
     def delete_in_db(self) -> bool:
-        if self.job_id is not None:
-            ref: DocumentReference = self.db.collection(
-                u'jobs').document(self.job_id)
-
-            ref.delete()
-            return not ref.get().exists
-
-        else:
-            return False
+        """
+        Remove own entry from database
+        """
+        pass
 
     @staticmethod
     def _datetimefromstr(string: str) -> datetime:

@@ -4,21 +4,27 @@ Testing for Job object and method
 import unittest
 import warnings
 
-from impression_job.job import Job
-from impression_job.exceptions import JobCreationError, JobNotFoundError, JobAccessError
+from impression_job.job_factory import ImpressionJobFactory
+from impression_job.gc_job import Job
+from impression_job.exceptions import JobCreationError, JobNotFoundError, \
+    JobAccessError
 
 from google.cloud import firestore
 
 
-class TestJob(unittest.TestCase):
+class TestGCPJob(unittest.TestCase):
     def setUp(self) -> None:
         """Create Initial Job"""
-        warnings.simplefilter("ignore", ResourceWarning)
+        warnings.simplefilter('ignore', ResourceWarning)
+        self.job_factory = ImpressionJobFactory(platform='gcp')
+        self.platform = 'gcp'
 
-        self.test_job = Job('test-user',
-                            {'input_name': 'test-input.sdf',
-                             'upload_name': 'test-upload.sdf'},
-                            model='fchl')
+        self.test_job = self.job_factory.job(
+            'test-user',
+            {
+                'input_name': 'test-input.sdf',
+                'upload_name': 'test-upload.sdf'},
+            model='fchl')
 
         self.test_dict = {'job_id': None, 'user': 'test-user', 'status': 0,
                           'input_name': 'test-input.sdf',
@@ -41,7 +47,7 @@ class TestJob(unittest.TestCase):
 
     def test_empty_to_dict(self):
         self.assertDictEqual(
-            Job().to_dict(),
+            self.job_factory.job().to_dict(),
             {'job_id': None, 'user': None, 'status': 0, 'input_name': None,
              'upload_name': None, 'output_name': None, 'model': None,
              'submission_time': None, 'start_time': None,
@@ -51,11 +57,12 @@ class TestJob(unittest.TestCase):
 
     def test_invalid_file_dict(self):
         with self.assertRaises(JobCreationError):
-            Job().update_in_db()
+            self.job_factory.job().update_in_db()
 
     def test_from_dict(self):
-        self.assertDictEqual(Job.from_dict(self.test_dict).to_dict(),
-                             self.test_dict)
+        self.assertDictEqual(
+            self.job_factory.from_dict(self.test_dict).to_dict(),
+            self.test_dict)
 
     def test_update(self):
         job_id = self.test_job.update_in_db('test-impression_job')
@@ -64,20 +71,21 @@ class TestJob(unittest.TestCase):
         self.assertEqual(job_id, 'test-impression_job')
 
     def test_from_id(self):
-        new_job = Job.from_id('test-impression_job', 'test-user')
+        new_job = self.job_factory.from_id('test-impression_job', 'test-user')
 
         self.assertDictEqual(new_job.to_dict(), self.test_dict)
 
     def test_from_invalid_id(self):
         with self.assertRaises(JobNotFoundError):
-            Job.from_id('invalid-id', 'user')
+            self.job_factory.from_id('invalid-id', 'user')
 
     def test_non_matching_user(self):
         with self.assertRaises(JobAccessError):
-            Job.from_id('test-impression_job', 'incorrect-user')
+            self.job_factory.from_id('test-impression_job',
+                                     'incorrect-user')
 
     def test_delete(self):
-        job_to_delete = Job.from_dict(self.test_dict)
+        job_to_delete = self.job_factory.from_dict(self.test_dict)
         job_to_delete.update_in_db('impression_job-to-delete')
 
         self.assertTrue(job_to_delete.delete_in_db())
