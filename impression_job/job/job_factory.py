@@ -1,13 +1,20 @@
-from impression_job.job.gc_job import GCPJob
+from impression_job.job.gcp_job import GCPJob
 
 
 class ImpressionJobFactory:
+    """
+    Create platform specific Job objects
+    directly (job)
+    from dictionary (from_dict)
+    from id (database job id)
+    """
     def __init__(self, platform):
         self.platform = platform
         self.cls_ = ImpressionJobFactory._select(platform)
 
     @staticmethod
     def _select(platform):
+        """Return the platform specific Job class"""
         if platform == 'gcp':
             return GCPJob
         else:
@@ -15,6 +22,7 @@ class ImpressionJobFactory:
                 f'Invalid platform: {platform}')
 
     def job(self, *args, **kwargs):
+        """Platform specific Job creation"""
         return self.cls_(*args, **kwargs)
 
     def from_dict(self, *args, **kwargs):

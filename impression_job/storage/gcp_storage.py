@@ -1,5 +1,6 @@
 """
 GCP Storage class
+Manage file upload, download, deletion from relevant buckets
 """
 import pathlib
 
@@ -11,6 +12,9 @@ from impression_job.storage.exceptions import FileTransferError
 
 
 class GCPStorage(ImpressionFileStorage):
+    """
+    Upload, download and delete input/output files
+    """
     def __init__(self, input_bucket_name, output_bucket_name):
         self._client: gc_storage.Client = None
         self.input_bucket_name = input_bucket_name
@@ -43,7 +47,8 @@ class GCPStorage(ImpressionFileStorage):
                        bucket: gc_storage.Bucket,
                        destination: pathlib.PurePath,
                        file_name: str):
-        """Download file name (captured from file_path from bucket)
+        """
+        Download file name (captured from file_path from bucket)
         :param destination: file_path to save file
         :type bucket: :class:`google.cloud.storage.Bucket`
         :param bucket: storage bucket
@@ -62,6 +67,10 @@ class GCPStorage(ImpressionFileStorage):
                      bucket: gc_storage.Bucket,
                      file_path: pathlib.PurePath,
                      file_name: str):
+        """
+        Upload file_path to bucket/file_name
+        Raises FileTransferError on invalid file path
+        """
 
         blob = bucket.blob(file_name)
         try:
@@ -71,7 +80,7 @@ class GCPStorage(ImpressionFileStorage):
                 f'file upload failed: {file_name} not found')
 
     def _exists(self, bucket: gc_storage.Bucket, file_name: str) -> bool:
-        """Does file exist in bucket"""
+        """Does bucket/file_name exist?"""
         blob = bucket.blob(file_name)
         return blob.exists()
 
@@ -79,13 +88,15 @@ class GCPStorage(ImpressionFileStorage):
                           file_name: str = None):
         """Upload file at file_path to input file bucket under its `name`
         :param file_name: name of file in bucket
-        :param file_path: file_path to file to be uploaded"""
+        :param file_path: file_path to file to be uploaded
+        """
         file_name = file_path.name if file_name is None else file_name
         self._upload_file(self._input_bucket, file_path, file_name)
 
     def download_input_file(self, destination: pathlib.PurePath,
                             file_name: str = None):
-        """Download file name (captured from file_path from input bucket)
+        """
+        Download file name (captured from file_path from input bucket)
         :param destination: file_path to save file
         :param file_name: name of file in bucket
         :raises: :class: `google.cloud.exception.NotFound`
@@ -95,7 +106,8 @@ class GCPStorage(ImpressionFileStorage):
 
     def upload_output_file(self, file_path: pathlib.PurePath,
                            file_name: str = None):
-        """Upload file at file_path to output file bucket under its `name`
+        """
+        Upload file at file_path to output file bucket under its `name`
         :param file_path: file_path to file to be uploaded
         :param file_name: name of file in bucket
         """
@@ -104,7 +116,8 @@ class GCPStorage(ImpressionFileStorage):
 
     def download_output_file(self, destination,
                              file_name: str = None):
-        """Download file name (captured from file_path from output bucket)
+        """
+        Download file name (captured from file_path from output bucket)
         :param destination: file_path to save file
         :param file_name: name of file in bucket
         :raises: :class: `google.cloud.exception.NotFound`
@@ -112,9 +125,16 @@ class GCPStorage(ImpressionFileStorage):
         file_name = destination.name if file_name is None else file_name
         self._download_file(self._output_bucket, destination, file_name)
 
+    # todo except invalid file_names
     def delete_input_file(self, file_name: str):
-
+        """
+        Delete input_bucket/file_name
+        """
         self._input_bucket.delete_blob(file_name)
 
+    # todo except invalid file_names
     def delete_output_file(self, file_name: str):
+        """
+        Delete output_bucket/file_name
+        """
         self._output_bucket.delete_blob(file_name)
