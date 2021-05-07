@@ -1,5 +1,5 @@
 """
-Factory for FileStorage Objects
+Factory for platform specific FileStorage instances
 """
 from impression_job.storage.gcp_storage import GCPStorage
 

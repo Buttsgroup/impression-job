@@ -1,7 +1,14 @@
+"""
+Factory of platform specific database objects
+"""
 from impression_job.database.gcp_database import GCPDatabase
 
 
 class ImpressionDatabaseFactory:
+    """
+    Platform specific Database objects
+    database() creates instances for the chosen platform
+    """
     def __init__(self, platform):
         self.platform = platform
         self.cls_ = ImpressionDatabaseFactory._select(platform)

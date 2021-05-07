@@ -1,26 +1,26 @@
 """
-IMPRESSION Job: manage impression_job instances within firestore
-JobAccessError, JobCreationError, JobNotFoundError
-JobStatus enum
+IMPRESSION Job for GCP
 """
-import enum
-
 from google.cloud import firestore
 from google.cloud.firestore import DocumentReference
 
-from impression_job.job.exceptions import JobCreationError, JobNotFoundError, \
-    JobAccessError
-from impression_job.job.job import Job
+from impression_job.job.exceptions import \
+    JobCreationError, JobNotFoundError, JobAccessError
+from impression_job.job.job import Job, JobStatus
 
 
 class GCPJob(Job):
     """
-    Impression Job for the google cloud platform (gcp)
+    Impression Job for the google cloud platform (GCP)
+    Representation of a job in the GCP database
+    Allow update/deletion of own record in database
+
+    Overloads delete_in_db, update_in_db, from_dict, from_id from parent Job
+
     Raises JobCreationError on invalid File dictionary
     Raises JobAccessError: init from db : permission denied
     Raises JobNotFoundError: init from db: no such impression_job id
     """
-    platform = 'gcp'
 
     def __init__(self,
                  user: str = None,
@@ -34,22 +34,6 @@ class GCPJob(Job):
         if self._db is None:
             self._db = firestore.Client()
         return self._db
-
-    def to_dict(self):
-        return {u'job_id': self.job_id,
-                u'user': self.user,
-                u'status': self.status.value,
-                u'input_name': self.input_name,
-                u'upload_name': self._upload_name,
-                u'output_name': self._output_name,
-                u'model': self.model,
-                u'submission_time': self.submission_time,
-                u'start_time': self.start_time,
-                u'completion_time': self.completion_time,
-                u'info': self._info,
-                u'err': self._err,
-                u'output_file_url': self._output_file_url
-                }
 
     @staticmethod
     def from_dict(src: dict):
@@ -118,15 +102,3 @@ class GCPJob(Job):
 
         else:
             return False
-
-
-class JobStatus(enum.IntEnum):
-    """
-    Enumeration for Job states
-    """
-    NONE = 0
-    SUBMITTED = 1
-    QUEUED = 2
-    STARTED = 3
-    FINISHED = 4
-    ERROR = 5

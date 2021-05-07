@@ -10,9 +10,9 @@ from impression_job.storage.exceptions import FileTransferError
 class TestImpressionFileStorage(unittest.TestCase):
     storage: GCPStorage = None
     persistent_input = pathlib.PurePath(
-        '../data/input/test-input-file-2.sdf')
+        'data/input/test-input-file-2.sdf')
     persistent_output = pathlib.PurePath(
-        '../data/output/test-output-file-2.sdf')
+        'data/output/test-output-file-2.sdf')
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -34,10 +34,10 @@ class TestImpressionFileStorage(unittest.TestCase):
         self.storage: GCPStorage = TestImpressionFileStorage.storage
 
         self.test_input_path = pathlib.PurePath(
-            '../data/input/test-input-file-1.sdf')
+            'data/input/test-input-file-1.sdf')
 
         self.test_output_path = pathlib.PurePath(
-            '../data/output/test-output-file-1.sdf')
+            'data/output/test-output-file-1.sdf')
 
     def test_input_upload(self):
 
@@ -54,7 +54,7 @@ class TestImpressionFileStorage(unittest.TestCase):
     def test_invalid_input_upload(self):
         with self.assertRaises(FileTransferError):
             self.storage.upload_input_file(
-                pathlib.PurePath('../data/input/not-a-file.sdf'))
+                pathlib.PurePath('data/input/not-a-file.sdf'))
 
     def test_output_upload(self):
         self.storage.upload_output_file(
@@ -70,7 +70,7 @@ class TestImpressionFileStorage(unittest.TestCase):
     def test_invalid_output_upload(self):
         with self.assertRaises(FileTransferError):
             self.storage.upload_output_file(
-                pathlib.PurePath('../data/out/not-a-file.sdf'))
+                pathlib.PurePath('data/out/not-a-file.sdf'))
 
     def test_double_upload(self):
         self.storage.upload_input_file(
@@ -82,7 +82,7 @@ class TestImpressionFileStorage(unittest.TestCase):
         self.storage.delete_input_file(self.test_input_path.name)
 
     def test_input_download(self):
-        destination = pathlib.Path('../data/test-input-file-2.sdf')
+        destination = pathlib.Path('data/test-input-file-2.sdf')
         self.storage.download_input_file(destination)
 
         self.assertTrue(destination.exists())
@@ -100,7 +100,7 @@ class TestImpressionFileStorage(unittest.TestCase):
             pass
 
     def test_output_download(self):
-        destination = pathlib.Path('../data/test-output-file-2.sdf')
+        destination = pathlib.Path('data/test-output-file-2.sdf')
         self.storage.download_output_file(destination)
 
         self.assertTrue(destination.exists())

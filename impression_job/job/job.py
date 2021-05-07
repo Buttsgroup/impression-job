@@ -15,13 +15,21 @@ class Job(abc.ABC):
     Base Job object for IMPRESSION
     On creation, methods for database access will be passed via the
     command pattern
+    _time instance variables are exposed via getter interfaces
+    to ensure that a compliant string is produced
+
+    public methods
+    to_dict: return a dictionary representation (database storage)
+    from_dict (abstract): return a Job object from a passed dictionary
+    from_id (abstract): return a Job object give a document database id
+    update_in_db (abstract): created/update self in database
+    delete_in_db (abstract): delete own entry from database
 
     Raises JobCreationError on invalid File dictionary
     Raises JobAccessError: init from db : permission denied
-    Raises JobNotFoundError: init from db: no such impression_job id
+    Raises JobNotFoundError: init from db: no such job id
     """
     _datetime_format = '%y-%m-%d::%H:%M'
-    platform = None
 
     def __init__(self,
                  user: str = None,
@@ -29,7 +37,7 @@ class Job(abc.ABC):
                  model: str = None,
                  job_id: str = None):
         """
-        Creating a new impression_job via file upload
+        Creating a new impression job via submission system
         """
         self.user = user
         self.file = file
