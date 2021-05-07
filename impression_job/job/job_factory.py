@@ -1,18 +1,13 @@
-"""
-Creation of platform specific Impression Job instances
-"""
-
-from impression_job.job import Job
-from impression_job.gc_job import GCPJob
+from impression_job.job.gc_job import GCPJob
 
 
 class ImpressionJobFactory:
     def __init__(self, platform):
         self.platform = platform
-        self.cls_ = ImpressionJobFactory.select(platform)
+        self.cls_ = ImpressionJobFactory._select(platform)
 
     @staticmethod
-    def select(platform):
+    def _select(platform):
         if platform == 'gcp':
             return GCPJob
         else:

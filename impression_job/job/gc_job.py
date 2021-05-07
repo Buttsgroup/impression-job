@@ -8,10 +8,9 @@ import enum
 from google.cloud import firestore
 from google.cloud.firestore import DocumentReference
 
-from impression_job.exceptions import JobCreationError, JobNotFoundError, \
+from impression_job.job.exceptions import JobCreationError, JobNotFoundError, \
     JobAccessError
-from impression_job.firestore import ref_job
-from impression_job.job import Job
+from impression_job.job.job import Job
 
 
 class GCPJob(Job):
@@ -70,14 +69,16 @@ class GCPJob(Job):
         return job
 
     @staticmethod
-    def from_id(job_id: str, user: str):
+    def from_id(job_id: str, user: str, db: firestore.Client = None):
         """
         Look up a job_id in the database
         Return the constructed Job object IF user matches Job.user
         """
-        db = firestore.Client()
+        if db is None:
+            db = firestore.Client()
 
-        job_ref = ref_job(db, job_id).get()
+        job_ref = db.collection(u'jobs').document(job_id).get()
+
         if job_ref.exists:
             job = GCPJob.from_dict(job_ref.to_dict())
             if job.user == user:

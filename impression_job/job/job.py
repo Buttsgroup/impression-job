@@ -7,7 +7,7 @@ import abc
 from datetime import datetime
 import enum
 
-from impression_job.exceptions import JobCreationError
+from impression_job.job.exceptions import JobCreationError
 
 
 class Job(abc.ABC):
@@ -129,6 +129,7 @@ class Job(abc.ABC):
         Access database client/socket if set,
         otherwise fetch, set and return it
         """
+
     pass
 
     def to_dict(self):
