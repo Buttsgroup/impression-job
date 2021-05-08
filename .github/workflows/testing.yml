@@ -15,11 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AUTH_KEY: ${{ secrets.IMPRESSION_SERVICE_AUTH }}
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/auth.json
     steps:
     - uses: actions/checkout@v2
     - name: create auth key from secret
       shell: bash
-      run: echo "${AUTH_KEY}" > /tmp/auth.json && export GOOGLE_APPLICATION_CREDENTIALS=/tmp/auth.json
+      run: echo "${AUTH_KEY}" > /tmp/auth.json
     - name: Set up Python 3.6
       uses: actions/setup-python@v2
       with:
