@@ -12,13 +12,14 @@ on:
 
 jobs:
   build:
-    environment: testing
     runs-on: ubuntu-latest
+    env:
+      AUTH_KEY: ${{ secrets.IMPRESSION_SERVICE_AUTH }}
     steps:
     - uses: actions/checkout@v2
     - name: create auth key from secret
-      run: echo "${IMPRESSION_SERVICE_AUTH}" > auth.json && export GOOGLE_APPLICATION_CREDENTIALS=auth.json
       shell: bash
+      run: echo "${AUTH_KEY}" > /tmp/auth.json && export GOOGLE_APPLICATION_CREDENTIALS=/tmp/auth.json
     - name: Set up Python 3.6
       uses: actions/setup-python@v2
       with:
@@ -27,6 +28,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Test with pytest
+    - name: Test unittest
       run: |
         python -m unittest discover --start-directory tests/ --pattern test*.py
