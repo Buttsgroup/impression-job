@@ -2,9 +2,9 @@ import pathlib
 import unittest
 import warnings
 
-from impression_job.storage.file_storage_factory import ImpressionFileStorageFactory
-from impression_job.storage.gcp_storage import GCPStorage
-from impression_job.storage.exceptions import FileTransferError
+from impression_web.storage.file_storage_factory import ImpressionFileStorageFactory
+from impression_web.storage.gcp_storage import GCPStorage
+from impression_web.storage.exceptions import FileTransferError
 
 
 class TestImpressionFileStorage(unittest.TestCase):

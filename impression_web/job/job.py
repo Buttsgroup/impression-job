@@ -1,5 +1,5 @@
 """
-IMPRESSION Job: manage impression_job instances within firestore
+IMPRESSION Job: manage impression_web instances within firestore
 JobAccessError, JobCreationError, JobNotFoundError
 JobStatus enum
 """
@@ -7,7 +7,7 @@ import abc
 from datetime import datetime
 import enum
 
-from impression_job.job.exceptions import JobCreationError
+from impression_web.job.exceptions import JobCreationError
 
 
 class Job(abc.ABC):

@@ -7,8 +7,8 @@ import pathlib
 import google.cloud.storage as gc_storage
 import google.api_core.exceptions
 
-from impression_job.storage.file_storage import ImpressionFileStorage
-from impression_job.storage.exceptions import FileTransferError
+from impression_web.storage.file_storage import ImpressionFileStorage
+from impression_web.storage.exceptions import FileTransferError
 
 
 class GCPStorage(ImpressionFileStorage):
