@@ -1,4 +1,4 @@
-from impression_job.job.gcp_job import GCPJob
+from impression_web.job.gcp_job import GCPJob
 
 
 class ImpressionJobFactory:

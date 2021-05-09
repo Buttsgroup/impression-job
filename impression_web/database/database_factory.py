@@ -1,7 +1,7 @@
 """
 Factory of platform specific database objects
 """
-from impression_job.database.gcp_database import GCPDatabase
+from impression_web.database.gcp_database import GCPDatabase
 
 
 class ImpressionDatabaseFactory:

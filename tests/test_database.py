@@ -1,9 +1,9 @@
 import unittest
 import warnings
 
-from impression_job.database.database_factory import ImpressionDatabaseFactory
-from impression_job.job.job_factory import ImpressionJobFactory
-from impression_job.job.job import Job
+from impression_web.database.database_factory import ImpressionDatabaseFactory
+from impression_web.job.job_factory import ImpressionJobFactory
+from impression_web.job.job import Job
 
 
 class TestImpressionDatabase(unittest.TestCase):

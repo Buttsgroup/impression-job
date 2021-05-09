@@ -4,8 +4,8 @@ Testing for Job object and method
 import unittest
 import warnings
 
-from impression_job.job.job_factory import ImpressionJobFactory
-from impression_job.job.exceptions import JobCreationError, JobNotFoundError, \
+from impression_web.job.job_factory import ImpressionJobFactory
+from impression_web.job.exceptions import JobCreationError, JobNotFoundError, \
     JobAccessError
 
 from google.cloud import firestore
@@ -38,7 +38,7 @@ class TestGCPJob(unittest.TestCase):
                          'err': '', 'output_file_url': None}
 
         # Upload to database
-        cls.test_job.update_in_db('test-impression_job')
+        cls.test_job.update_in_db('test-impression_web')
 
     def setUp(self) -> None:
         warnings.simplefilter('ignore', ResourceWarning)
@@ -70,13 +70,13 @@ class TestGCPJob(unittest.TestCase):
             TestGCPJob.test_dict)
 
     def test_update(self):
-        job_id = TestGCPJob.test_job.update_in_db('test-impression_job')
+        job_id = TestGCPJob.test_job.update_in_db('test-impression_web')
 
-        self.assertEqual(TestGCPJob.test_job.job_id, 'test-impression_job')
-        self.assertEqual(job_id, 'test-impression_job')
+        self.assertEqual(TestGCPJob.test_job.job_id, 'test-impression_web')
+        self.assertEqual(job_id, 'test-impression_web')
 
     def test_from_id(self):
-        new_job = TestGCPJob.job_factory.from_id('test-impression_job',
+        new_job = TestGCPJob.job_factory.from_id('test-impression_web',
                                                  'test-user')
 
         self.assertDictEqual(new_job.to_dict(), TestGCPJob.test_dict)
@@ -87,12 +87,12 @@ class TestGCPJob(unittest.TestCase):
 
     def test_non_matching_user(self):
         with self.assertRaises(JobAccessError):
-            TestGCPJob.job_factory.from_id('test-impression_job',
+            TestGCPJob.job_factory.from_id('test-impression_web',
                                            'incorrect-user')
 
     def test_delete(self):
         job_to_delete = TestGCPJob.job_factory.from_dict(TestGCPJob.test_dict)
-        job_to_delete.update_in_db('impression_job-to-delete')
+        job_to_delete.update_in_db('impression_web-to-delete')
 
         self.assertTrue(job_to_delete.delete_in_db())
 
@@ -104,4 +104,4 @@ class TestGCPJob(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.test_job.db.document('jobs/test-impression_job').delete()
+        cls.test_job.db.document('jobs/test-impression_web').delete()

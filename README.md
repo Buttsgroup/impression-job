@@ -1,4 +1,4 @@
-# impression-job
+# impression-web
 job, database and storage classes for the impression web-service
  
 Allows a consistent interface between Frontend <-> Database <-> Backend

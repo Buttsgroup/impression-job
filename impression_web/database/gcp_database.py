@@ -5,8 +5,8 @@ from typing import Iterable
 
 from google.cloud import firestore
 
-from impression_job.database.database import Database
-from impression_job.job.gcp_job import GCPJob
+from impression_web.database.database import Database
+from impression_web.job.gcp_job import GCPJob
 
 
 class GCPDatabase(Database):

@@ -4,9 +4,9 @@ IMPRESSION Job for GCP
 from google.cloud import firestore
 from google.cloud.firestore import DocumentReference
 
-from impression_job.job.exceptions import \
+from impression_web.job.exceptions import \
     JobCreationError, JobNotFoundError, JobAccessError
-from impression_job.job.job import Job, JobStatus
+from impression_web.job.job import Job, JobStatus
 
 
 class GCPJob(Job):
@@ -19,7 +19,7 @@ class GCPJob(Job):
 
     Raises JobCreationError on invalid File dictionary
     Raises JobAccessError: init from db : permission denied
-    Raises JobNotFoundError: init from db: no such impression_job id
+    Raises JobNotFoundError: init from db: no such impression_web id
     """
 
     def __init__(self,
@@ -81,10 +81,10 @@ class GCPJob(Job):
                 self.file is None and
                 self.model is None):
             raise JobCreationError(
-                f"""Cannot add empty impression_job to database:
+                f"""Cannot add empty impression_web to database:
                 {self.user}, {self.file}, {self.model}""")
 
-        # Passing None to document() generates a impression_job-id
+        # Passing None to document() generates a impression_web-id
         ref: DocumentReference = self.db.collection(u'jobs').document(jid)
 
         write_res: firestore.types.WriteResult = ref.set(self.to_dict())
