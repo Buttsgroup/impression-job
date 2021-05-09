@@ -163,10 +163,11 @@ class Job(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def from_id(job_id: str, user: str):
+    def from_id(job_id: str, user: str, admin_access=False):
         """
         Look up a job_id in the database
         Return the constructed Job object IF user matches Job.user
+        Admin access allows non-matching user to query
         """
         pass
 

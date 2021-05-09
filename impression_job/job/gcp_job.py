@@ -53,10 +53,12 @@ class GCPJob(Job):
         return job
 
     @staticmethod
-    def from_id(job_id: str, user: str, db: firestore.Client = None):
+    def from_id(job_id: str, user: str,
+                admin_access=None, db: firestore.Client = None):
         """
         Look up a job_id in the database
         Return the constructed Job object IF user matches Job.user
+        Admin access allows non-matching user to query
         """
         if db is None:
             db = firestore.Client()
@@ -65,7 +67,7 @@ class GCPJob(Job):
 
         if job_ref.exists:
             job = GCPJob.from_dict(job_ref.to_dict())
-            if job.user == user:
+            if job.user == user or admin_access:
                 return job
             else:
                 raise JobAccessError(f"{user} does not own {job_id}")
