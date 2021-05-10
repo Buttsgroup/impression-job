@@ -75,12 +75,20 @@ class Job(abc.ABC):
         except AttributeError:
             return None
 
+    @submission_time.setter
+    def submission_time(self, now: datetime):
+        self._submission_time = now
+
     @property
     def start_time(self):
         try:
             return self._strfromdatetime(self._start_time)
         except AttributeError:
             return None
+
+    @start_time.setter
+    def start_time(self, now: datetime):
+        self._start_time = now
 
     @property
     def completion_time(self):
@@ -89,6 +97,10 @@ class Job(abc.ABC):
                 self._completion_time)
         except AttributeError:
             return None
+
+    @completion_time.setter
+    def completion_time(self, now: datetime):
+        self._completion_time = now
 
     @property
     def output_file_url(self):
